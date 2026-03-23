@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Triagem de Tickets · n8n Tester</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+
+    <!-- ─── HEADER ─── -->
+    <header class="header">
+      <div class="header-brand">
+        <div class="header-icon">🎫</div>
+        <div>
+          <div class="header-title">Triagem de Tickets</div>
+          <div class="header-sub">n8n webhook tester</div>
+        </div>
+      </div>
+      <div class="status-dot">fluxo ativo</div>
+    </header>
+
+    <!-- ─── WEBHOOK URL ─── -->
+    <div class="webhook-bar">
+      <span class="webhook-method">POST</span>
+      <input
+        class="webhook-url-input"
+        id="webhook-url"
+        type="url"
+        placeholder="http://localhost:5678/webhook/jira-triage"
+        value="http://localhost:5678/webhook/jira-triage"
+        spellcheck="false"
+      >
+      <button class="webhook-copy-btn" id="copy-url-btn" onclick="copyWebhookUrl()">copiar</button>
+    </div>
+
+    <!-- ─── MAIN GRID ─── -->
+    <div class="main-grid">
+
+      <!-- COL 1 — PRESET SELECTOR -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon icon-blue">📋</div>
+            Payloads de exemplo
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="preset-grid" id="preset-list">
+            <!-- Presets injetados via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- COL 2 — EDITOR + SEND -->
+      <div>
+        <div class="card" style="margin-bottom: 1rem;">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-title-icon icon-pink">✏️</div>
+              Payload JSON
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="payload-editor-wrap">
+              <textarea
+                class="payload-textarea"
+                id="payload-textarea"
+                spellcheck="false"
+                autocomplete="off"
+                placeholder='{ "ticket_id": "JIRA-0001", ... }'
+              ></textarea>
+              <div class="json-validation neutral" id="json-indicator">— editor vazio</div>
+            </div>
+
+            <button class="send-btn" id="send-btn" onclick="sendRequest()">
+              <span>▶</span> Enviar para o n8n
+            </button>
+          </div>
+        </div>
+
+        <!-- HISTORY -->
+        <div id="history-section" style="display:none">
+          <div class="history-title">Histórico de envios</div>
+          <div class="history-list" id="history-list"></div>
+        </div>
+      </div>
+
+      <!-- RESPONSE — full width -->
+      <div class="response-panel" id="response-panel"></div>
+
+    </div><!-- /main-grid -->
+  </div><!-- /app -->
+
+  <script src="app.js"></script>
+</body>
+</html>

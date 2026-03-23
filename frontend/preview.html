@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Triagem de Tickets · n8n Tester</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap');
+
+/* ─── TOKENS ─── */
+:root {
+  --blue-50: #eff6ff;
+  --blue-100: #dbeafe;
+  --blue-200: #bfdbfe;
+  --blue-400: #60a5fa;
+  --blue-500: #3b82f6;
+  --blue-600: #2563eb;
+  --blue-700: #1d4ed8;
+
+  --pink-50: #fdf2f8;
+  --pink-100: #fce7f3;
+  --pink-200: #fbcfe8;
+  --pink-400: #f472b6;
+  --pink-500: #ec4899;
+  --pink-600: #db2777;
+
+  --bg: #f8f9ff;
+  --surface: #ffffff;
+  --surface2: #f3f4f8;
+  --border: #e2e5f0;
+  --border-strong: #c7cde3;
+  --text: #0f1628;
+  --text-2: #3d4563;
+  --text-muted: #8a90a8;
+
+  --gradient: linear-gradient(135deg, var(--blue-500), var(--pink-500));
+  --gradient-soft: linear-gradient(135deg, #eff6ff, #fdf2f8);
+
+  --radius: 12px;
+  --radius-lg: 18px;
+  --shadow-sm: 0 1px 3px rgba(37, 99, 235, 0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow: 0 4px 16px rgba(37, 99, 235, 0.10), 0 1px 4px rgba(0,0,0,0.06);
+  --shadow-lg: 0 12px 40px rgba(37, 99, 235, 0.14), 0 2px 8px rgba(0,0,0,0.06);
+
+  --sans: 'Plus Jakarta Sans', sans-serif;
+  --mono: 'Fira Code', monospace;
+}
+
+/* ─── RESET ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ─── LAYOUT ─── */
+.app {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* ─── HEADER ─── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.header-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.header-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.header-sub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  margin-top: 1px;
+}
+
+.status-dot {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: var(--mono);
+}
+
+.status-dot::before {
+  content: '';
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.25);
+  animation: pulse 2s ease infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ─── WEBHOOK URL BAR ─── */
+.webhook-bar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.8rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.webhook-method {
+  background: var(--gradient);
+  color: white;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  padding: 0.22rem 0.55rem;
+  border-radius: 5px;
+  letter-spacing: 0.08em;
+  flex-shrink: 0;
+}
+
+.webhook-url-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--text-2);
+  outline: none;
+  min-width: 0;
+}
+
+.webhook-url-input::placeholder { color: var(--text-muted); }
+
+.webhook-copy-btn {
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  border-radius: 7px;
+  padding: 0.28rem 0.7rem;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.18s;
+  flex-shrink: 0;
+}
+
+.webhook-copy-btn:hover {
+  border-color: var(--blue-400);
+  color: var(--blue-600);
+  background: var(--blue-50);
+}
+
+/* ─── MAIN GRID ─── */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (max-width: 700px) {
+  .main-grid { grid-template-columns: 1fr; }
+}
+
+/* ─── CARDS ─── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.card-title-icon {
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem;
+}
+
+.icon-blue { background: var(--blue-100); }
+.icon-pink { background: var(--pink-100); }
+.icon-gray { background: var(--surface2); }
+
+.card-body { padding: 1.25rem; }
+
+/* ─── PRESET SELECTOR ─── */
+.preset-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.preset-item {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.75rem 0.9rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  background: var(--surface);
+  text-align: left;
+  width: 100%;
+}
+
+.preset-item:hover {
+  border-color: var(--blue-400);
+  background: var(--blue-50);
+  transform: translateX(3px);
+}
+
+.preset-item.active {
+  border-color: var(--blue-500);
+  background: linear-gradient(135deg, var(--blue-50), #fff);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.preset-item.preset-error {
+  border-color: var(--border);
+}
+
+.preset-item.preset-error:hover {
+  border-color: var(--pink-400);
+  background: var(--pink-50);
+}
+
+.preset-item.preset-error.active {
+  border-color: var(--pink-500);
+  background: linear-gradient(135deg, var(--pink-50), #fff);
+  box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+}
+
+.preset-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.63rem;
+  font-family: var(--mono);
+  font-weight: 500;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 0.35rem;
+  letter-spacing: 0.05em;
+}
+
+.badge-ok { background: var(--blue-100); color: var(--blue-600); }
+.badge-warn { background: #fef3c7; color: #92400e; }
+.badge-err { background: var(--pink-100); color: var(--pink-600); }
+
+.preset-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+  display: block;
+}
+
+.preset-desc {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+  display: block;
+}
+
+.preset-section-label {
+  font-size: 0.68rem;
+  font-family: var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 0.5rem 0 0.3rem;
+  display: block;
+}
+
+/* ─── PAYLOAD EDITOR ─── */
+.payload-editor-wrap {
+  position: relative;
+}
+
+.payload-textarea {
+  width: 100%;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  line-height: 1.65;
+  color: var(--text);
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.9rem 1rem;
+  resize: vertical;
+  min-height: 280px;
+  outline: none;
+  transition: border-color 0.18s;
+  tab-size: 2;
+}
+
+.payload-textarea:focus {
+  border-color: var(--blue-400);
+  background: #fafbff;
+}
+
+.payload-textarea.has-error {
+  border-color: var(--pink-400);
+  background: #fff8fb;
+}
+
+.json-validation {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  margin-top: 0.5rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.json-validation.valid { background: #f0fdf4; color: #15803d; }
+.json-validation.invalid { background: var(--pink-50); color: var(--pink-600); }
+.json-validation.neutral { background: var(--surface2); color: var(--text-muted); }
+
+/* ─── SEND BUTTON ─── */
+.send-btn {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.85rem 1.5rem;
+  background: var(--gradient);
+  border: none;
+  border-radius: var(--radius);
+  color: white;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  letter-spacing: -0.01em;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+}
+
+.send-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.35);
+}
+
+.send-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.send-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.send-btn .spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── RESPONSE PANEL ─── */
+.response-panel {
+  grid-column: 1 / -1;
+  display: none;
+}
+
+.response-panel.visible {
+  display: block;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── STATUS BAR ─── */
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.status-bar.success {
+  background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+  border: 1px solid #86efac;
+  color: #15803d;
+}
+
+.status-bar.error {
+  background: linear-gradient(135deg, var(--pink-50), #fff);
+  border: 1px solid var(--pink-200);
+  color: var(--pink-600);
+}
+
+.status-bar.warning {
+  background: linear-gradient(135deg, #fffbeb, #fefce8);
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+
+.status-bar.loading {
+  background: linear-gradient(135deg, var(--blue-50), #fff);
+  border: 1px solid var(--blue-200);
+  color: var(--blue-600);
+}
+
+.status-code {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  opacity: 0.7;
+}
+
+/* ─── RESULT GRID ─── */
+.result-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 600px) {
+  .result-content { grid-template-columns: 1fr; }
+}
+
+.result-fields {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.result-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--border);
+  gap: 0.75rem;
+}
+
+.result-field:last-child { border-bottom: none; }
+
+.result-field-key {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.result-field-val {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  text-align: right;
+}
+
+/* ─── CHIPS / BADGES ─── */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 99px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-family: var(--mono);
+}
+
+.chip-bug { background: #fef2f2; color: #dc2626; }
+.chip-duvida { background: var(--blue-100); color: var(--blue-700); }
+.chip-operacional { background: #fff7ed; color: #c2410c; }
+.chip-alta { background: #fef2f2; color: #dc2626; }
+.chip-media { background: #fefce8; color: #a16207; }
+.chip-baixa { background: #f0fdf4; color: #15803d; }
+.chip-eng { background: #f5f3ff; color: #7c3aed; }
+.chip-prod { background: var(--blue-100); color: var(--blue-700); }
+.chip-ops { background: #fff7ed; color: #c2410c; }
+
+/* ─── RAW JSON RESPONSE ─── */
+.raw-response {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.raw-response-header {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface2);
+}
+
+.raw-label {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.raw-copy {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-muted);
+  padding: 0.15rem 0.5rem;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.raw-copy:hover { border-color: var(--blue-400); color: var(--blue-600); }
+
+.raw-pre {
+  padding: 0.9rem 1rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  line-height: 1.65;
+  color: var(--text-2);
+  overflow-x: auto;
+  white-space: pre;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* ─── ERROR / INCOMPLETE DETAIL ─── */
+.detail-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+}
+
+.detail-box.error-box { border-color: var(--pink-200); background: var(--pink-50); }
+.detail-box.warn-box { border-color: #fde68a; background: #fffbeb; }
+
+.detail-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.detail-msg {
+  font-family: var(--mono);
+  font-size: 0.73rem;
+  color: var(--text-2);
+  line-height: 1.55;
+}
+
+/* ─── HISTORY ─── */
+.history-section {
+  margin-top: 1.5rem;
+}
+
+.history-title {
+  font-size: 0.72rem;
+  font-family: var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.history-item:hover {
+  border-color: var(--blue-300);
+  background: var(--blue-50);
+}
+
+.history-status {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.hs-ok { background: #22c55e; }
+.hs-err { background: var(--pink-500); }
+.hs-warn { background: #f59e0b; }
+
+.history-id { font-family: var(--mono); color: var(--text-muted); flex-shrink: 0; }
+.history-title-text { color: var(--text-2); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.history-time { font-family: var(--mono); font-size: 0.65rem; color: var(--text-muted); flex-shrink: 0; }
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 99px; }
+</style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="header-brand">
+        <div class="header-icon">🎫</div>
+        <div>
+          <div class="header-title">Triagem de Tickets</div>
+          <div class="header-sub">n8n webhook tester</div>
+        </div>
+      </div>
+      <div class="status-dot">fluxo ativo</div>
+    </header>
+    <div class="webhook-bar">
+      <span class="webhook-method">POST</span>
+      <input class="webhook-url-input" id="webhook-url" type="url" placeholder="http://localhost:5678/webhook/jira-triage" value="http://localhost:5678/webhook/jira-triage" spellcheck="false">
+      <button class="webhook-copy-btn" id="copy-url-btn" onclick="copyWebhookUrl()">copiar</button>
+    </div>
+    <div class="main-grid">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-title-icon icon-blue">📋</div>
+            Payloads de exemplo
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="preset-grid" id="preset-list"></div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom: 1rem;">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-title-icon icon-pink">✏️</div>
+              Payload JSON
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="payload-editor-wrap">
+              <textarea class="payload-textarea" id="payload-textarea" spellcheck="false" autocomplete="off" placeholder='{ "ticket_id": "JIRA-0001", ... }'></textarea>
+              <div class="json-validation neutral" id="json-indicator">— editor vazio</div>
+            </div>
+            <button class="send-btn" id="send-btn" onclick="sendRequest()">
+              <span>▶</span> Enviar para o n8n
+            </button>
+          </div>
+        </div>
+        <div id="history-section" style="display:none">
+          <div class="history-title">Histórico de envios</div>
+          <div class="history-list" id="history-list"></div>
+        </div>
+      </div>
+      <div class="response-panel" id="response-panel"></div>
+    </div>
+  </div>
+<script>
+// ═══════════════════════════════════════════════
+// PRESETS — payloads de entrada
+// ═══════════════════════════════════════════════
+const PRESETS = [
+  // ── VÁLIDOS ──
+  {
+    id: 'bug-app',
+    badge: 'ok',
+    badgeLabel: '✓ Válido',
+    name: 'Bug — App trava (Rede Credenciada)',
+    desc: 'Crash no iOS com dados completos',
+    payload: {
+      ticket_id: 'JIRA-4821',
+      titulo: 'App trava ao tentar visualizar Rede Credenciada',
+      descricao: 'Desde ontem à tarde, quando tento abrir a seção de rede credenciada no app, a tela carrega por alguns segundos e depois fecha sozinha. Já desinstalei e reinstalei, mas continua acontecendo. iPhone 14, iOS 17.4.',
+      solicitante: 'ana.lima@email.com',
+      criado_em: '2025-03-10T14:32:00Z'
+    }
+  },
+  {
+    id: 'duvida-boleto',
+    badge: 'ok',
+    badgeLabel: '✓ Válido',
+    name: 'Dúvida — Segunda via do boleto',
+    desc: 'Dúvida clara com contexto suficiente',
+    payload: {
+      ticket_id: 'JIRA-4900',
+      titulo: 'Como emitir segunda via do boleto pelo app?',
+      descricao: 'Preciso pagar minha fatura mas não encontrei onde baixar a segunda via do boleto no aplicativo. Já tentei pelo menu principal, histórico de pagamentos e configurações de conta, mas a opção não aparece. Estou usando Android 13, app versão 4.2.1.',
+      solicitante: 'carlos.melo@email.com',
+      criado_em: '2025-03-11T09:15:00Z'
+    }
+  },
+  {
+    id: 'operacional-lentidao',
+    badge: 'ok',
+    badgeLabel: '✓ Válido',
+    name: 'Problema Operacional — Lentidão no painel',
+    desc: 'Problema de performance no backoffice',
+    payload: {
+      ticket_id: 'JIRA-5103',
+      titulo: 'Painel administrativo extremamente lento desde atualização',
+      descricao: 'Após a atualização do sistema realizada na sexta-feira (07/03), o painel administrativo está demorando mais de 40 segundos para carregar qualquer relatório. Antes da atualização carregava em menos de 3 segundos. Afeta todos os usuários do time de operações (7 pessoas). Já tentamos limpar cache e acessar de diferentes navegadores sem sucesso.',
+      solicitante: 'patricia.ops@alice.com.br',
+      criado_em: '2025-03-10T11:00:00Z'
+    }
+  },
+  // ── INCOMPLETOS (passam validação mas LLM retorna incompleto) ──
+  {
+    id: 'incompleto-vago',
+    badge: 'warn',
+    badgeLabel: '⚠ Incompleto',
+    name: 'Relato vago — "sistema parou"',
+    desc: 'Descrição sem contexto para triagem',
+    payload: {
+      ticket_id: 'JIRA-5001',
+      titulo: 'Sistema com problema',
+      descricao: 'O sistema parou de funcionar hoje de manhã. Por favor verificar.',
+      solicitante: 'joao.silva@email.com',
+      criado_em: '2025-03-10T08:00:00Z'
+    }
+  },
+  {
+    id: 'incompleto-sem-contexto',
+    badge: 'warn',
+    badgeLabel: '⚠ Incompleto',
+    name: 'Erro sem detalhes de reprodução',
+    desc: 'Falta: versão, passos, frequência',
+    payload: {
+      ticket_id: 'JIRA-5050',
+      titulo: 'Não consigo fazer login',
+      descricao: 'Não está funcionando o login. Dá um erro.',
+      solicitante: 'usuario@email.com',
+      criado_em: '2025-03-12T16:45:00Z'
+    }
+  },
+  // ── ERROS DE VALIDAÇÃO ──
+  {
+    id: 'erro-sem-descricao',
+    badge: 'err',
+    badgeLabel: '✕ Erro — Campo vazio',
+    name: 'Campo obrigatório vazio (descricao)',
+    desc: 'Retorna HTTP 400 sem chamar o LLM',
+    payload: {
+      ticket_id: 'JIRA-5200',
+      titulo: 'Erro no pagamento',
+      descricao: '',
+      solicitante: 'teste@email.com',
+      criado_em: '2025-03-10T10:00:00Z'
+    }
+  },
+  {
+    id: 'erro-sem-id',
+    badge: 'err',
+    badgeLabel: '✕ Erro — Campo ausente',
+    name: 'ticket_id ausente no payload',
+    desc: 'Campo obrigatório faltando no JSON',
+    payload: {
+      titulo: 'Bug no checkout',
+      descricao: 'Ao finalizar a compra o sistema retorna erro 500 sem mensagem de detalhe.',
+      solicitante: 'comprador@email.com',
+      criado_em: '2025-03-13T14:20:00Z'
+    }
+  },
+  {
+    id: 'erro-descricao-curta',
+    badge: 'err',
+    badgeLabel: '✕ Erro — Desc. curta',
+    name: 'Descrição abaixo do mínimo',
+    desc: 'Menos de 20 chars → rejeitado na validação',
+    payload: {
+      ticket_id: 'JIRA-5300',
+      titulo: 'Tela branca',
+      descricao: 'App bugado.',
+      solicitante: 'pedro@email.com',
+      criado_em: '2025-03-14T09:00:00Z'
+    }
+  },
+  {
+    id: 'erro-json-invalido',
+    badge: 'err',
+    badgeLabel: '✕ Erro — JSON inválido',
+    name: 'JSON malformado',
+    desc: 'Sintaxe quebrada — falha antes do webhook',
+    payload: '{ "ticket_id": "JIRA-9999", "titulo": "Teste, "descricao": "faltou fechar aspas }'
+  }
+];
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let activePreset = null;
+let requestHistory = [];
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  buildPresets();
+  loadPreset('bug-app');
+
+  // Live JSON validation
+  document.getElementById('payload-textarea').addEventListener('input', validateJSON);
+});
+
+// ═══════════════════════════════════════════════
+// BUILD PRESET LIST
+// ═══════════════════════════════════════════════
+function buildPresets() {
+  const container = document.getElementById('preset-list');
+  const groups = {
+    ok:   { label: 'Payloads válidos', items: [] },
+    warn: { label: 'Incompletos (passam validação)', items: [] },
+    err:  { label: 'Erros de validação', items: [] }
+  };
+
+  PRESETS.forEach(p => groups[p.badge]?.items.push(p));
+
+  Object.entries(groups).forEach(([type, group]) => {
+    const label = document.createElement('span');
+    label.className = 'preset-section-label';
+    label.textContent = group.label;
+    container.appendChild(label);
+
+    group.items.forEach(p => {
+      const btn = document.createElement('button');
+      btn.className = `preset-item ${type === 'err' ? 'preset-error' : ''}`;
+      btn.dataset.presetId = p.id;
+      btn.innerHTML = `
+        <span class="preset-badge badge-${type === 'ok' ? 'ok' : type === 'warn' ? 'warn' : 'err'}">${p.badgeLabel}</span>
+        <span class="preset-name">${p.name}</span>
+        <span class="preset-desc">${p.desc}</span>
+      `;
+      btn.addEventListener('click', () => loadPreset(p.id));
+      container.appendChild(btn);
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════
+// LOAD PRESET INTO EDITOR
+// ═══════════════════════════════════════════════
+function loadPreset(id) {
+  const preset = PRESETS.find(p => p.id === id);
+  if (!preset) return;
+
+  activePreset = id;
+
+  // Update active state
+  document.querySelectorAll('.preset-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.presetId === id);
+  });
+
+  const textarea = document.getElementById('payload-textarea');
+  if (typeof preset.payload === 'string') {
+    textarea.value = preset.payload;
+  } else {
+    textarea.value = JSON.stringify(preset.payload, null, 2);
+  }
+
+  validateJSON();
+  clearResponse();
+}
+
+// ═══════════════════════════════════════════════
+// JSON VALIDATION
+// ═══════════════════════════════════════════════
+function validateJSON() {
+  const val = document.getElementById('payload-textarea').value.trim();
+  const indicator = document.getElementById('json-indicator');
+  const textarea = document.getElementById('payload-textarea');
+
+  if (!val) {
+    indicator.className = 'json-validation neutral';
+    indicator.textContent = '— editor vazio';
+    textarea.classList.remove('has-error');
+    return;
+  }
+
+  try {
+    JSON.parse(val);
+    indicator.className = 'json-validation valid';
+    indicator.textContent = '✓ JSON válido';
+    textarea.classList.remove('has-error');
+  } catch (e) {
+    indicator.className = 'json-validation invalid';
+    indicator.textContent = `✕ JSON inválido — ${e.message.split('\n')[0]}`;
+    textarea.classList.add('has-error');
+  }
+}
+
+// ═══════════════════════════════════════════════
+// COPY WEBHOOK URL
+// ═══════════════════════════════════════════════
+function copyWebhookUrl() {
+  const url = document.getElementById('webhook-url').value;
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = document.getElementById('copy-url-btn');
+    btn.textContent = 'copiado!';
+    setTimeout(() => btn.textContent = 'copiar', 1500);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// SEND REQUEST
+// ═══════════════════════════════════════════════
+async function sendRequest() {
+  const rawPayload = document.getElementById('payload-textarea').value.trim();
+  const webhookUrl = document.getElementById('webhook-url').value.trim();
+  const btn = document.getElementById('send-btn');
+
+  // Validate JSON first
+  let parsedPayload;
+  try {
+    parsedPayload = JSON.parse(rawPayload);
+  } catch (e) {
+    showClientError('JSON inválido', `O payload não é um JSON válido e não pode ser enviado.\n${e.message}`);
+    return;
+  }
+
+  if (!webhookUrl) {
+    showClientError('URL do webhook vazia', 'Informe a URL do webhook do n8n antes de enviar.');
+    return;
+  }
+
+  // Loading state
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Enviando...';
+  showLoading();
+
+  const startTime = Date.now();
+
+  try {
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(parsedPayload)
+    });
+
+    const elapsed = Date.now() - startTime;
+    let responseData;
+
+    try {
+      responseData = await response.json();
+    } catch {
+      responseData = { error: 'Resposta não é JSON válido' };
+    }
+
+    addToHistory(parsedPayload, response.status, responseData);
+    showResponse(response.status, responseData, elapsed, parsedPayload);
+
+  } catch (err) {
+    const elapsed = Date.now() - startTime;
+    const isNetworkErr = err.name === 'TypeError' && err.message.includes('fetch');
+    showNetworkError(
+      isNetworkErr
+        ? 'Não foi possível conectar ao webhook. Verifique se o n8n está rodando e a URL está correta.'
+        : err.message,
+      elapsed
+    );
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span>▶</span> Enviar para o n8n';
+  }
+}
+
+// ═══════════════════════════════════════════════
+// SHOW RESPONSE
+// ═══════════════════════════════════════════════
+function showLoading() {
+  const panel = document.getElementById('response-panel');
+  panel.className = 'response-panel visible card';
+  panel.innerHTML = `
+    <div class="card-body">
+      <div class="status-bar loading">
+        <span class="spinner" style="width:14px;height:14px;border-width:2px"></span>
+        Aguardando resposta do n8n...
+      </div>
+    </div>`;
+}
+
+function clearResponse() {
+  const panel = document.getElementById('response-panel');
+  panel.className = 'response-panel';
+  panel.innerHTML = '';
+}
+
+function showClientError(title, msg) {
+  const panel = document.getElementById('response-panel');
+  panel.className = 'response-panel visible card';
+  panel.innerHTML = `
+    <div class="card-body">
+      <div class="status-bar error">
+        <span>✕</span> ${title}
+      </div>
+      <div class="detail-box error-box">
+        <div class="detail-title">Erro no cliente</div>
+        <div class="detail-msg">${msg}</div>
+      </div>
+    </div>`;
+}
+
+function showNetworkError(msg, elapsed) {
+  const panel = document.getElementById('response-panel');
+  panel.className = 'response-panel visible card';
+  panel.innerHTML = `
+    <div class="card-body">
+      <div class="status-bar error">
+        <span>✕</span> Falha de conexão
+        <span class="status-code">${elapsed}ms</span>
+      </div>
+      <div class="detail-box error-box">
+        <div class="detail-title">Não foi possível alcançar o webhook</div>
+        <div class="detail-msg">${msg}</div>
+      </div>
+    </div>`;
+}
+
+function showResponse(httpStatus, data, elapsed, sentPayload) {
+  const panel = document.getElementById('response-panel');
+  panel.className = 'response-panel visible card';
+
+  const status = data.status || '';
+  const isSuccess = status === 'sucesso' || httpStatus === 200 && !data.error;
+  const isError = httpStatus >= 400 || status.startsWith('erro');
+  const isIncomplete = status === 'incompleto';
+
+  let statusBar = '';
+  if (isSuccess && !isIncomplete) {
+    statusBar = `<div class="status-bar success"><span>✓</span> Triagem concluída com sucesso <span class="status-code">HTTP ${httpStatus} · ${elapsed}ms</span></div>`;
+  } else if (isIncomplete) {
+    statusBar = `<div class="status-bar warning"><span>⚠</span> Ticket incompleto — fluxo encerrado sem triagem <span class="status-code">HTTP ${httpStatus} · ${elapsed}ms</span></div>`;
+  } else if (isError) {
+    statusBar = `<div class="status-bar error"><span>✕</span> Erro na triagem <span class="status-code">HTTP ${httpStatus} · ${elapsed}ms</span></div>`;
+  } else {
+    statusBar = `<div class="status-bar loading"><span>ℹ</span> Resposta recebida <span class="status-code">HTTP ${httpStatus} · ${elapsed}ms</span></div>`;
+  }
+
+  let content = '';
+
+  if (isSuccess && !isIncomplete && data.tipo) {
+    content = `
+      <div class="result-content">
+        <div class="result-fields">
+          ${field('ticket_id', data.ticket_id)}
+          ${fieldChip('tipo', data.tipo, chipClass('tipo', data.tipo))}
+          ${fieldChip('severidade', data.severidade, chipClass('sev', data.severidade))}
+          ${fieldChip('time_responsavel', data.time_responsavel, chipClass('time', data.time_responsavel))}
+        </div>
+        <div class="raw-response">
+          <div class="raw-response-header">
+            <span class="raw-label">JSON da resposta</span>
+            <button class="raw-copy" onclick="copyRaw()">copiar</button>
+          </div>
+          <pre class="raw-pre" id="raw-json">${escapeHTML(JSON.stringify(data, null, 2))}</pre>
+        </div>
+      </div>`;
+  } else if (isIncomplete) {
+    content = `
+      <div class="result-content">
+        <div class="detail-box warn-box">
+          <div class="detail-title">⚠ Ticket marcado como incompleto</div>
+          <div class="detail-msg"><strong>ID:</strong> ${data.ticket_id || sentPayload?.ticket_id || '—'}<br><strong>Motivo:</strong> ${data.motivo || 'Relato vago demais para triagem confiante'}</div>
+        </div>
+        <div class="raw-response">
+          <div class="raw-response-header">
+            <span class="raw-label">JSON da resposta</span>
+            <button class="raw-copy" onclick="copyRaw()">copiar</button>
+          </div>
+          <pre class="raw-pre" id="raw-json">${escapeHTML(JSON.stringify(data, null, 2))}</pre>
+        </div>
+      </div>`;
+  } else {
+    content = `
+      <div class="result-content">
+        <div class="detail-box error-box">
+          <div class="detail-title">Detalhe do erro</div>
+          <div class="detail-msg">${data.motivo || data.error || data.message || 'Sem detalhe disponível'}</div>
+        </div>
+        <div class="raw-response">
+          <div class="raw-response-header">
+            <span class="raw-label">JSON da resposta</span>
+            <button class="raw-copy" onclick="copyRaw()">copiar</button>
+          </div>
+          <pre class="raw-pre" id="raw-json">${escapeHTML(JSON.stringify(data, null, 2))}</pre>
+        </div>
+      </div>`;
+  }
+
+  panel.innerHTML = `<div class="card-body">${statusBar}${content}</div>`;
+}
+
+// ═══════════════════════════════════════════════
+// HISTORY
+// ═══════════════════════════════════════════════
+function addToHistory(payload, httpStatus, responseData) {
+  const status = responseData?.status || '';
+  const type = httpStatus >= 400 || status.startsWith('erro') ? 'err'
+    : status === 'incompleto' ? 'warn' : 'ok';
+
+  requestHistory.unshift({
+    id: payload.ticket_id || '—',
+    title: payload.titulo || 'sem título',
+    type,
+    time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+    payload,
+    httpStatus,
+    responseData
+  });
+
+  if (requestHistory.length > 8) requestHistory.pop();
+  renderHistory();
+}
+
+function renderHistory() {
+  const list = document.getElementById('history-list');
+  const section = document.getElementById('history-section');
+
+  if (requestHistory.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+
+  section.style.display = 'block';
+  list.innerHTML = requestHistory.map((item, i) => `
+    <div class="history-item" onclick="loadFromHistory(${i})">
+      <span class="history-status hs-${item.type}"></span>
+      <span class="history-id">${item.id}</span>
+      <span class="history-title-text">${item.title}</span>
+      <span class="history-time">${item.time}</span>
+    </div>
+  `).join('');
+}
+
+function loadFromHistory(idx) {
+  const item = requestHistory[idx];
+  if (!item) return;
+
+  document.querySelectorAll('.preset-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('payload-textarea').value = JSON.stringify(item.payload, null, 2);
+  validateJSON();
+  showResponse(item.httpStatus, item.responseData, 0, item.payload);
+}
+
+// ═══════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════
+function field(key, val) {
+  return `<div class="result-field">
+    <span class="result-field-key">${key}</span>
+    <span class="result-field-val">${val || '—'}</span>
+  </div>`;
+}
+
+function fieldChip(key, val, cls) {
+  return `<div class="result-field">
+    <span class="result-field-key">${key}</span>
+    <span class="chip ${cls}">${val || '—'}</span>
+  </div>`;
+}
+
+function chipClass(type, val) {
+  const map = {
+    tipo: { Bug: 'chip-bug', Dúvida: 'chip-duvida', 'Problema operacional': 'chip-operacional' },
+    sev:  { Alta: 'chip-alta', Média: 'chip-media', Baixa: 'chip-baixa' },
+    time: { Engenharia: 'chip-eng', Produto: 'chip-prod', Operações: 'chip-ops' }
+  };
+  return map[type]?.[val] || '';
+}
+
+function escapeHTML(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function copyRaw() {
+  const pre = document.getElementById('raw-json');
+  if (!pre) return;
+  navigator.clipboard.writeText(pre.textContent).then(() => {
+    const btn = document.querySelector('.raw-copy');
+    if (btn) { btn.textContent = 'copiado!'; setTimeout(() => btn.textContent = 'copiar', 1500); }
+  });
+}
+</script>
+</body></html>
