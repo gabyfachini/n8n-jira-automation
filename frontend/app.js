@@ -286,24 +286,23 @@ function extractName(email) {
   return email.split('@')[0].replace(/[._]/g, ' ');
 }
 
+// ── TOGGLE PRESETS ──
+function togglePresets() {
+  const collapsible = $('presets-collapsible');
+  const btn = $('btn-collapse-presets');
+  const isCollapsed = collapsible.classList.contains('collapsed');
+
+  collapsible.classList.toggle('collapsed');
+  btn.classList.toggle('collapsed');
+  btn.innerHTML = isCollapsed
+    ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg> Recolher`
+    : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg> Expandir`;
+}
+
 // ── FORM VALIDATION ──
 function validateForm() {
-  let valid = true;
   clearErrors();
-
-  const nome = $('field-nome').value.trim();
-  const email = $('field-email').value.trim();
-  const titulo = $('field-titulo').value.trim();
-  const descricao = $('field-descricao').value.trim();
-
-  if (!nome) { showFieldError('field-nome', 'Nome é obrigatório'); valid = false; }
-  if (!email) { showFieldError('field-email', 'Email é obrigatório'); valid = false; }
-  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    showFieldError('field-email', 'Email inválido'); valid = false;
-  }
-  if (!titulo) { showFieldError('field-titulo', 'Título é obrigatório'); valid = false; }
-
-  return valid;
+  return true; // All fields optional — validation handled by n8n
 }
 
 function showFieldError(fieldId, msg) {
@@ -473,52 +472,60 @@ function renderHistory() {
   }
 
   container.innerHTML = `
-    <table class="history-table">
-      <thead>
-        <tr>
-          <th>Ticket ID</th>
-          <th>Título</th>
-          <th>Solicitante</th>
-          <th>Descrição</th>
-          <th>Status</th>
-          <th>Horário</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${history.map(entry => `
+    <div class="history-table-wrapper">
+      <table class="history-table">
+        <colgroup>
+          <col style="width:90px">
+          <col style="width:160px">
+          <col style="width:130px">
+          <col>
+          <col style="width:80px">
+          <col style="width:80px">
+          <col style="width:150px">
+        </colgroup>
+        <thead>
           <tr>
-            <td><span class="history-ticket-id">${entry.ticket_id}</span></td>
-            <td><span class="history-title" title="${entry.titulo}">${entry.titulo}</span></td>
-            <td style="font-size:11px;color:var(--text-secondary)">${entry.solicitante}</td>
-            <td><span class="history-desc" title="${entry.descricao}">${entry.descricao}</span></td>
-            <td><span class="status-badge ${entry.status}">${entry.status}</span></td>
-            <td><span class="history-time">${entry.timestamp}</span></td>
-            <td>
-              <div class="action-buttons">
-                <button class="btn-edit" onclick="openEditModal(${entry.id})">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                  Editar
-                </button>
-                <button class="btn-resend" onclick="resendEntry(${entry.id})">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-                  Reenviar
-                </button>
-              </div>
-            </td>
+            <th>Ticket ID</th>
+            <th>Título</th>
+            <th>Solicitante</th>
+            <th>Descrição</th>
+            <th>Status</th>
+            <th>Horário</th>
+            <th>Ações</th>
           </tr>
-        `).join('')}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          ${history.map(entry => `
+            <tr>
+              <td><span class="history-ticket-id">${entry.ticket_id}</span></td>
+              <td><span class="history-title" title="${entry.titulo}">${entry.titulo}</span></td>
+              <td style="font-size:11px;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${entry.solicitante}">${entry.solicitante}</td>
+              <td><span class="history-desc" title="${entry.descricao}">${entry.descricao}</span></td>
+              <td><span class="status-badge ${entry.status}">${entry.status}</span></td>
+              <td><span class="history-time">${entry.timestamp}</span></td>
+              <td style="overflow:visible;">
+                <div class="action-buttons">
+                  <button class="btn-edit" onclick="openEditModal(${entry.id})">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    Editar
+                  </button>
+                  <button class="btn-resend" onclick="resendEntry(${entry.id})">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                    Reenviar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
   `;
 }
 
 // ── SUBMIT HANDLER ──
 async function handleSubmit() {
-  if (!validateForm()) {
-    showToast('Preencha os campos obrigatórios', 'error');
-    return;
-  }
+  validateForm();
 
   const payload = buildPayload();
   setLoading(true);

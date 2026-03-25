@@ -183,6 +183,63 @@ body {
   grid-area: presets;
 }
 
+.presets-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.presets-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-collapse {
+  background: var(--surface);
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.16s ease;
+  user-select: none;
+}
+
+.btn-collapse:hover {
+  border-color: var(--pink-500);
+  color: var(--pink-900);
+  background: var(--pink-50);
+}
+
+.btn-collapse svg {
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+
+.btn-collapse.collapsed svg {
+  transform: rotate(-90deg);
+}
+
+.presets-collapsible {
+  overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.3s ease;
+  max-height: 2000px;
+  opacity: 1;
+}
+
+.presets-collapsible.collapsed {
+  max-height: 0;
+  opacity: 0;
+}
+
 .presets-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -617,6 +674,7 @@ label .required {
 
 .history-card {
   padding: 24px;
+  overflow: hidden;
 }
 
 .history-empty {
@@ -626,11 +684,26 @@ label .required {
   font-size: 13px;
 }
 
+.history-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
 .history-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 12px;
+  table-layout: fixed;
+  min-width: 700px;
 }
+
+.history-table colgroup col:nth-child(1) { width: 90px; }
+.history-table colgroup col:nth-child(2) { width: 160px; }
+.history-table colgroup col:nth-child(3) { width: 130px; }
+.history-table colgroup col:nth-child(4) { width: auto; }
+.history-table colgroup col:nth-child(5) { width: 80px; }
+.history-table colgroup col:nth-child(6) { width: 80px; }
+.history-table colgroup col:nth-child(7) { width: 150px; }
 
 .history-table th {
   text-align: left;
@@ -642,6 +715,9 @@ label .required {
   color: var(--text-muted);
   border-bottom: 2px solid var(--border);
   background: var(--surface-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .history-table th:first-child { border-radius: var(--radius-sm) 0 0 0; }
@@ -652,6 +728,10 @@ label .required {
   border-bottom: 1px solid var(--border);
   vertical-align: middle;
   color: var(--text-primary);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 0;
 }
 
 .history-table tr:last-child td {
@@ -667,18 +747,22 @@ label .required {
   font-size: 11px;
   color: var(--pink-900);
   font-weight: 500;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .history-title {
   font-weight: 500;
-  max-width: 200px;
+  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .history-desc {
-  max-width: 250px;
+  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

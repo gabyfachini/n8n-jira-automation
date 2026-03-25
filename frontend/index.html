@@ -21,6 +21,7 @@
       </div>
       <div>
         <div class="topbar-title">Triagem Automática de Tickets</div>
+        <div class="topbar-subtitle">Powered by Gemini · n8n Workflow</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -39,12 +40,22 @@
 
     <!-- PRESET SECTION -->
     <section class="presets-section">
-      <div class="section-header">
-        <span class="section-label">Casos de Teste</span>
-        <span class="section-count">16 casos</span>
+      <div class="presets-header">
+        <div class="presets-header-left">
+          <span class="section-label">Casos de Teste</span>
+          <span class="section-count">16 casos</span>
+        </div>
+        <button class="btn-collapse" id="btn-collapse-presets" onclick="togglePresets()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="18 15 12 9 6 15"/>
+          </svg>
+          Recolher
+        </button>
       </div>
-      <div id="presets-grid" class="presets-grid">
-        <!-- Rendered by JS -->
+      <div class="presets-collapsible" id="presets-collapsible">
+        <div id="presets-grid" class="presets-grid">
+          <!-- Rendered by JS -->
+        </div>
       </div>
     </section>
 
@@ -76,7 +87,7 @@
         <!-- FORM FIELDS -->
         <div class="form-row">
           <div class="form-group">
-            <label for="field-nome">Nome do Solicitante <span class="required">*</span></label>
+            <label for="field-nome">Nome do Solicitante</label>
             <input
               type="text"
               id="field-nome"
@@ -87,7 +98,7 @@
             <span class="field-hint"></span>
           </div>
           <div class="form-group">
-            <label for="field-email">Email do Solicitante <span class="required">*</span></label>
+            <label for="field-email">Email do Solicitante</label>
             <input
               type="email"
               id="field-email"
@@ -101,7 +112,7 @@
 
         <div class="form-row">
           <div class="form-group full-width">
-            <label for="field-titulo">Título do Ticket <span class="required">*</span></label>
+            <label for="field-titulo">Título do Ticket</label>
             <input
               type="text"
               id="field-titulo"
