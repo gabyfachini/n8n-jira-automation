@@ -726,12 +726,11 @@ label .required {
 .history-table td {
   padding: 10px 12px;
   border-bottom: 1px solid var(--border);
-  vertical-align: middle;
+  vertical-align: top;
   color: var(--text-primary);
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  max-width: 0;
+  overflow: visible;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .history-table tr:last-child td {
@@ -756,17 +755,21 @@ label .required {
 .history-title {
   font-weight: 500;
   display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .history-desc {
   display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
   color: var(--text-secondary);
+}
+
+.history-cell-wrap {
+  white-space: normal;
+  word-break: break-word;
+  min-width: 100px;
 }
 
 .status-badge {

@@ -24,10 +24,6 @@
       </div>
     </div>
     <div class="topbar-right">
-      <div class="webhook-status">
-        <span class="webhook-dot"></span>
-        <span>Webhook ativo</span>
-      </div>
       <button class="btn-secondary" onclick="editWebhookUrl()" style="font-size:11px;padding:5px 10px;">
         Configurar URL
       </button>
@@ -42,16 +38,16 @@
       <div class="presets-header">
         <div class="presets-header-left">
           <span class="section-label">Casos de Teste</span>
-          <span class="section-count">16 casos</span>
+          <span class="section-count">21 casos</span>
         </div>
-        <button class="btn-collapse" id="btn-collapse-presets" onclick="togglePresets()">
+        <button class="btn-collapse collapsed" id="btn-collapse-presets" onclick="togglePresets()">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <polyline points="18 15 12 9 6 15"/>
           </svg>
-          Recolher
+          <span>Expandir</span>
         </button>
       </div>
-      <div class="presets-collapsible" id="presets-collapsible">
+      <div class="presets-collapsible collapsed" id="presets-collapsible">
         <div id="presets-grid" class="presets-grid">
           <!-- Rendered by JS -->
         </div>
@@ -228,47 +224,6 @@
 
   <!-- TOAST CONTAINER -->
   <div class="toast-container" id="toast-container"></div>
-
-  <!-- EDIT MODAL -->
-  <div class="modal-overlay" id="modal-overlay">
-    <div class="modal-card">
-      <div class="modal-header">
-        <span class="modal-title">Editar e Reenviar Ticket</span>
-        <button class="modal-close" onclick="closeModal()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
-        </button>
-      </div>
-      <div class="modal-form">
-        <div class="form-group">
-          <label>Ticket ID</label>
-          <input type="text" id="modal-ticket-id" class="form-input" placeholder="JIRA-XXXX" />
-        </div>
-        <div class="form-group">
-          <label>Solicitante (email)</label>
-          <input type="email" id="modal-solicitante" class="form-input" placeholder="email@empresa.com" />
-        </div>
-        <div class="form-group">
-          <label>Título</label>
-          <input type="text" id="modal-titulo" class="form-input" placeholder="Título do ticket" />
-        </div>
-        <div class="form-group">
-          <label>Descrição</label>
-          <textarea id="modal-descricao" class="form-textarea" rows="4" placeholder="Descrição do problema"></textarea>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
-        <button class="btn-primary" onclick="submitModal()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
-          </svg>
-          Salvar e Reenviar
-        </button>
-      </div>
-    </div>
-  </div>
 
   <script src="app.js"></script>
 </body>

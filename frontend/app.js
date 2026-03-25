@@ -2,10 +2,11 @@
 const WEBHOOK_URL = 'http://localhost:5678/webhook-test/triagem-ticket';
 let ticketCounter = 1017;
 let history = [];
-let editingIndex = null;
 
 // ── PRESET CASES ──
+// Ordenados: Sucesso → Aviso/Incompleto → Erro
 const PRESETS = [
+  // ── SUCESSO ──
   {
     id: 1,
     name: "Caso Base – Bug Alta",
@@ -49,81 +50,6 @@ const PRESETS = [
       description: "Fui cobrado duas vezes pelo mesmo serviço na fatura deste mês.",
       requester_name: "Carlos Santos",
       requester_email: "user3@email.com"
-    }
-  },
-  {
-    id: 4,
-    name: "Ticket Incompleto – Descrição Vaga",
-    type: "warning",
-    badge: "warning",
-    expectedLabel: "Aviso · Descrição curta",
-    expectedStatus: "400 Bad Request",
-    data: {
-      ticket_id: "JIRA-1004",
-      title: "Erro no app",
-      description: "Não funciona",
-      requester_name: "Maria Souza",
-      requester_email: "user4@email.com"
-    }
-  },
-  {
-    id: 5,
-    name: "Campo Faltando – Sem Descrição",
-    type: "error",
-    badge: "error",
-    expectedLabel: "Erro · Campo vazio",
-    expectedStatus: "400 Bad Request",
-    data: {
-      ticket_id: "JIRA-1005",
-      title: "Erro ao logar",
-      description: "",
-      requester_name: "",
-      requester_email: "user5@email.com"
-    }
-  },
-  {
-    id: 6,
-    name: "Sem Título",
-    type: "error",
-    badge: "error",
-    expectedLabel: "Erro · Campo ausente",
-    expectedStatus: "400 Bad Request",
-    data: {
-      ticket_id: "JIRA-1006",
-      title: "",
-      description: "O app não abre desde ontem.",
-      requester_name: "João Silva",
-      requester_email: "user6@email.com"
-    }
-  },
-  {
-    id: 7,
-    name: "Todos Campos Vazios",
-    type: "error",
-    badge: "error",
-    expectedLabel: "Erro · Payload inválido",
-    expectedStatus: "400 Bad Request",
-    data: {
-      ticket_id: "",
-      title: "",
-      description: "",
-      requester_name: "",
-      requester_email: ""
-    }
-  },
-  {
-    id: 8,
-    name: "Descrição Muito Curta",
-    type: "warning",
-    badge: "warning",
-    expectedLabel: "Aviso · Mínimo 20 chars",
-    expectedStatus: "400 Bad Request",
-    data: {
-      ticket_id: "JIRA-1008",
-      title: "Bug",
-      description: "Erro",
-      requester_name: "Lucas Oliveira",
-      requester_email: "user8@email.com"
     }
   },
   {
@@ -174,33 +100,6 @@ const PRESETS = [
     }
   },
   {
-    id: 12,
-    name: "Payload Malformado",
-    type: "error",
-    badge: "error",
-    expectedLabel: "Erro · Campos ausentes",
-    expectedStatus: "400 Bad Request",
-    data: {
-      ticket_id: "JIRA-1012",
-      title: "App crasha"
-    }
-  },
-  {
-    id: 13,
-    name: "LLM Pode Quebrar Parse",
-    type: "warning",
-    badge: "warning",
-    expectedLabel: "LLM · Parse instável",
-    expectedStatus: "200 / 500",
-    data: {
-      ticket_id: "JIRA-1013",
-      title: "Erro estranho",
-      description: "asdfasdf qwerqwer zxcvzxcv erro bug problema ???",
-      requester_name: "Usuário Teste",
-      requester_email: "user13@email.com"
-    }
-  },
-  {
     id: 14,
     name: "Dúvida com Contexto Forte",
     type: "success",
@@ -217,7 +116,7 @@ const PRESETS = [
   },
   {
     id: 15,
-    name: "Critico – Sistema Fora do Ar",
+    name: "Crítico – Sistema Fora do Ar",
     type: "success",
     badge: "success",
     expectedLabel: "Sucesso · Bug · Alta",
@@ -243,6 +142,187 @@ const PRESETS = [
       description: "Tentei pagar e deu erro, mas apareceu cobrança no cartão.",
       requester_name: "Maria Silva",
       requester_email: "user16@email.com"
+    }
+  },
+
+  // ── AVISO / INCOMPLETO ──
+  {
+    id: 101,
+    name: "Bug sem detalhes",
+    type: "warning",
+    badge: "warning",
+    expectedLabel: "Incompleto · Bug",
+    expectedStatus: "200 OK",
+    data: {
+      ticket_id: "JIRA-2001",
+      title: "Erro no sistema",
+      description: "Não está funcionando",
+      requester_name: "Carlos Silva",
+      requester_email: "user@email.com"
+    }
+  },
+  {
+    id: 102,
+    name: "Dúvida genérica",
+    type: "warning",
+    badge: "warning",
+    expectedLabel: "Incompleto · Dúvida",
+    expectedStatus: "200 OK",
+    data: {
+      ticket_id: "JIRA-2002",
+      title: "Como funciona?",
+      description: "",
+      requester_name: "Ana Souza",
+      requester_email: "user@email.com"
+    }
+  },
+  {
+    id: 103,
+    name: "Problema sem evidência",
+    type: "warning",
+    badge: "warning",
+    expectedLabel: "Incompleto · Problema operacional",
+    expectedStatus: "200 OK",
+    data: {
+      ticket_id: "JIRA-2003",
+      title: "Erro no pagamento",
+      description: "Acho que deu erro",
+      requester_name: "Marcos Lima",
+      requester_email: "user@email.com"
+    }
+  },
+  {
+    id: 104,
+    name: "Sem dados essenciais",
+    type: "warning",
+    badge: "warning",
+    expectedLabel: "Incompleto",
+    expectedStatus: "200 OK",
+    data: {
+      ticket_id: "JIRA-2004",
+      title: "",
+      description: "Erro ao tentar usar funcionalidade",
+      requester_name: "Julia Rocha",
+      requester_email: "user@email.com"
+    }
+  },
+  {
+    id: 105,
+    name: "Ambíguo",
+    type: "warning",
+    badge: "warning",
+    expectedLabel: "Incompleto",
+    expectedStatus: "200 OK",
+    data: {
+      ticket_id: "JIRA-2005",
+      title: "Problema estranho",
+      description: "Às vezes funciona, às vezes não",
+      requester_name: "Fernanda Alves",
+      requester_email: "user@email.com"
+    }
+  },
+  {
+    id: 4,
+    name: "Ticket Incompleto – Descrição Vaga",
+    type: "warning",
+    badge: "warning",
+    expectedLabel: "Aviso · Descrição curta",
+    expectedStatus: "400 Bad Request",
+    data: {
+      ticket_id: "JIRA-1004",
+      title: "Erro no app",
+      description: "Não funciona",
+      requester_name: "Maria Souza",
+      requester_email: "user4@email.com"
+    }
+  },
+  {
+    id: 8,
+    name: "Descrição Muito Curta",
+    type: "warning",
+    badge: "warning",
+    expectedLabel: "Aviso · Mínimo 20 chars",
+    expectedStatus: "400 Bad Request",
+    data: {
+      ticket_id: "JIRA-1008",
+      title: "Bug",
+      description: "Erro",
+      requester_name: "Lucas Oliveira",
+      requester_email: "user8@email.com"
+    }
+  },
+  {
+    id: 13,
+    name: "LLM Pode Quebrar Parse",
+    type: "warning",
+    badge: "warning",
+    expectedLabel: "LLM · Parse instável",
+    expectedStatus: "200 / 500",
+    data: {
+      ticket_id: "JIRA-1013",
+      title: "Erro estranho",
+      description: "asdfasdf qwerqwer zxcvzxcv erro bug problema ???",
+      requester_name: "Usuário Teste",
+      requester_email: "user13@email.com"
+    }
+  },
+
+  // ── ERRO ──
+  {
+    id: 5,
+    name: "Campo Faltando – Sem Descrição",
+    type: "error",
+    badge: "error",
+    expectedLabel: "Erro · Campo vazio",
+    expectedStatus: "400 Bad Request",
+    data: {
+      ticket_id: "JIRA-1005",
+      title: "Erro ao logar",
+      description: "",
+      requester_name: "",
+      requester_email: "user5@email.com"
+    }
+  },
+  {
+    id: 6,
+    name: "Sem Título",
+    type: "error",
+    badge: "error",
+    expectedLabel: "Erro · Campo ausente",
+    expectedStatus: "400 Bad Request",
+    data: {
+      ticket_id: "JIRA-1006",
+      title: "",
+      description: "O app não abre desde ontem.",
+      requester_name: "João Silva",
+      requester_email: "user6@email.com"
+    }
+  },
+  {
+    id: 7,
+    name: "Todos Campos Vazios",
+    type: "error",
+    badge: "error",
+    expectedLabel: "Erro · Payload inválido",
+    expectedStatus: "400 Bad Request",
+    data: {
+      ticket_id: "",
+      title: "",
+      description: "",
+      requester_name: "",
+      requester_email: ""
+    }
+  },
+  {
+    id: 12,
+    name: "Payload Malformado",
+    type: "error",
+    badge: "error",
+    expectedLabel: "Erro · Campos ausentes",
+    expectedStatus: "400 Bad Request",
+    data: {
+      ticket_id: "JIRA-1012",
+      title: "App crasha"
     }
   }
 ];
@@ -272,18 +352,15 @@ function renderPresets() {
   `).join('');
 }
 
-// ── LOAD PRESET INTO FORM (Corrigido para as novas chaves) ──
 function loadPreset(id) {
   const preset = PRESETS.find(p => p.id === id);
   if (!preset) return;
 
   const d = preset.data;
-  // Agora preenche o nome se existir, senão tenta extrair do email
   $('field-nome').value = d.requester_name || extractName(d.requester_email || '');
   $('field-email').value = d.requester_email || '';
   $('field-titulo').value = d.title || '';
   $('field-descricao').value = d.description || '';
-
   $('ticket-id-display').textContent = d.ticket_id || generateTicketId();
 
   clearErrors();
@@ -303,7 +380,23 @@ function clearErrors() {
   });
 }
 
-// ── BUILD PAYLOAD (Corrigido para requester_name e requester_email) ──
+function resetForm() {
+  $('field-nome').value = '';
+  $('field-email').value = '';
+  $('field-titulo').value = '';
+  $('field-descricao').value = '';
+  updateTicketIdDisplay();
+  clearErrors();
+}
+
+function togglePresets() {
+  const collapsible = $('presets-collapsible');
+  const btn = $('btn-collapse-presets');
+  const isCollapsed = collapsible.classList.toggle('collapsed');
+  btn.classList.toggle('collapsed', isCollapsed);
+  btn.querySelector('span').textContent = isCollapsed ? 'Expandir' : 'Recolher';
+}
+
 function buildPayload(overrides = {}) {
   const ticketId = $('ticket-id-display').textContent;
   const name = $('field-nome').value.trim();
@@ -315,8 +408,8 @@ function buildPayload(overrides = {}) {
     ticket_id: ticketId,
     title: title,
     description: description,
-    requester_name: name,   // Envia o nome do formulário
-    requester_email: email, // Envia o email do formulário
+    requester_name: name,
+    requester_email: email,
     created_at: new Date().toISOString(),
     ...overrides
   };
@@ -370,7 +463,6 @@ function syntaxHighlight(json) {
   });
 }
 
-// ── ADD TO HISTORY (Corrigido para exibir nome e email na tabela) ──
 function addToHistory(payload, result) {
   const entry = {
     id: history.length,
@@ -404,6 +496,14 @@ function renderHistory() {
   container.innerHTML = `
     <div class="history-table-wrapper">
       <table class="history-table">
+        <colgroup>
+          <col style="width:90px">
+          <col style="width:160px">
+          <col style="width:140px">
+          <col style="width:auto">
+          <col style="width:80px">
+          <col style="width:80px">
+        </colgroup>
         <thead>
           <tr>
             <th>Ticket ID</th>
@@ -412,26 +512,22 @@ function renderHistory() {
             <th>Descrição</th>
             <th>Status</th>
             <th>Horário</th>
-            <th>Ações</th>
           </tr>
         </thead>
         <tbody>
           ${history.map(entry => `
             <tr>
               <td><span class="history-ticket-id">${entry.ticket_id}</span></td>
-              <td><span class="history-title" title="${entry.title}">${entry.title}</span></td>
+              <td class="history-cell-wrap">${entry.title}</td>
               <td>
-                <div style="display:flex; flex-direction:column;">
+                <div style="display:flex; flex-direction:column; gap:2px;">
                   <strong style="font-size:12px;">${entry.requester_name}</strong>
-                  <span style="font-size:10px; color:var(--text-secondary);">${entry.requester_email}</span>
+                  <span style="font-size:10px; color:var(--text-secondary); word-break:break-all;">${entry.requester_email}</span>
                 </div>
               </td>
-              <td><span class="history-desc" title="${entry.description}">${entry.description}</span></td>
+              <td class="history-cell-wrap" style="color:var(--text-secondary);">${entry.description}</td>
               <td><span class="status-badge ${entry.status}">${entry.status}</span></td>
               <td><span class="history-time">${entry.timestamp}</span></td>
-              <td>
-                <button class="btn-resend" onclick="resendEntry(${entry.id})">Reenviar</button>
-              </td>
             </tr>
           `).join('')}
         </tbody>
@@ -464,7 +560,22 @@ function showToast(msg, type = 'info') {
   setTimeout(() => toast.remove(), 3000);
 }
 
+function editWebhookUrl() {
+  const current = WEBHOOK_URL;
+  const newUrl = prompt('URL do Webhook:', current);
+  if (newUrl && newUrl !== current) {
+    showToast('URL atualizada (requer reload para aplicar)', 'info');
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   renderPresets();
   updateTicketIdDisplay();
+
+  // Iniciar os casos de uso recolhidos
+  const collapsible = $('presets-collapsible');
+  const btn = $('btn-collapse-presets');
+  collapsible.classList.add('collapsed');
+  btn.classList.add('collapsed');
+  btn.querySelector('span').textContent = 'Expandir';
 });
