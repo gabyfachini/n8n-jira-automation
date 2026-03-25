@@ -1,97 +1,264 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Triagem de Tickets · n8n Tester</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Triagem de Tickets — Jira Triage</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="app">
 
-    <!-- ─── HEADER ─── -->
-    <header class="header">
-      <div class="header-brand">
-        <div class="header-icon">🎫</div>
-        <div>
-          <div class="header-title">Triagem de Tickets</div>
-          <div class="header-sub">n8n webhook tester</div>
-        </div>
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-logo">
+        <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="5" height="5" rx="1" fill="white"/>
+          <rect x="9" y="2" width="5" height="5" rx="1" fill="rgba(255,255,255,0.5)"/>
+          <rect x="2" y="9" width="5" height="5" rx="1" fill="rgba(255,255,255,0.5)"/>
+          <rect x="9" y="9" width="5" height="5" rx="1" fill="white"/>
+        </svg>
       </div>
-      <div class="status-dot">fluxo ativo</div>
-    </header>
-
-    <!-- ─── WEBHOOK URL ─── -->
-    <div class="webhook-bar">
-      <span class="webhook-method">POST</span>
-      <input
-        class="webhook-url-input"
-        id="webhook-url"
-        type="url"
-        placeholder="http://localhost:5678/webhook/jira-triage"
-        value="http://localhost:5678/webhook/jira-triage"
-        spellcheck="false"
-      >
-      <button class="webhook-copy-btn" id="copy-url-btn" onclick="copyWebhookUrl()">copiar</button>
-    </div>
-
-    <!-- ─── MAIN GRID ─── -->
-    <div class="main-grid">
-
-      <!-- COL 1 — PRESET SELECTOR -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">
-            <div class="card-title-icon icon-blue">📋</div>
-            Payloads de exemplo
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="preset-grid" id="preset-list">
-            <!-- Presets injetados via JS -->
-          </div>
-        </div>
-      </div>
-
-      <!-- COL 2 — EDITOR + SEND -->
       <div>
-        <div class="card" style="margin-bottom: 1rem;">
-          <div class="card-header">
-            <div class="card-title">
-              <div class="card-title-icon icon-pink">✏️</div>
-              Payload JSON
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="payload-editor-wrap">
-              <textarea
-                class="payload-textarea"
-                id="payload-textarea"
-                spellcheck="false"
-                autocomplete="off"
-                placeholder='{ "ticket_id": "JIRA-0001", ... }'
-              ></textarea>
-              <div class="json-validation neutral" id="json-indicator">— editor vazio</div>
-            </div>
+        <div class="topbar-title">Triagem Automática de Tickets</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="webhook-status">
+        <span class="webhook-dot"></span>
+        <span>Webhook ativo</span>
+      </div>
+      <button class="btn-secondary" onclick="editWebhookUrl()" style="font-size:11px;padding:5px 10px;">
+        Configurar URL
+      </button>
+    </div>
+  </header>
 
-            <button class="send-btn" id="send-btn" onclick="sendRequest()">
-              <span>▶</span> Enviar para o n8n
-            </button>
+  <!-- MAIN LAYOUT -->
+  <main class="app-layout">
+
+    <!-- PRESET SECTION -->
+    <section class="presets-section">
+      <div class="section-header">
+        <span class="section-label">Casos de Teste</span>
+        <span class="section-count">16 casos</span>
+      </div>
+      <div id="presets-grid" class="presets-grid">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- FORM SECTION -->
+    <section class="form-section">
+      <div class="card form-card">
+
+        <div class="form-title-bar">
+          <div class="form-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+          </div>
+          <div class="form-title-text">
+            <h2>Criar Ticket</h2>
+            <p>Preencha os dados do chamado para triagem automática</p>
           </div>
         </div>
 
-        <!-- HISTORY -->
-        <div id="history-section" style="display:none">
-          <div class="history-title">Histórico de envios</div>
-          <div class="history-list" id="history-list"></div>
+        <!-- TICKET ID -->
+        <div class="ticket-id-bar">
+          <span class="ticket-id-label">Ticket ID</span>
+          <span class="ticket-id-value" id="ticket-id-display">JIRA-1017</span>
+        </div>
+
+        <!-- FORM FIELDS -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="field-nome">Nome do Solicitante <span class="required">*</span></label>
+            <input
+              type="text"
+              id="field-nome"
+              class="form-input"
+              placeholder="Ex: João Silva"
+              autocomplete="name"
+            />
+            <span class="field-hint"></span>
+          </div>
+          <div class="form-group">
+            <label for="field-email">Email do Solicitante <span class="required">*</span></label>
+            <input
+              type="email"
+              id="field-email"
+              class="form-input"
+              placeholder="Ex: joao@empresa.com"
+              autocomplete="email"
+            />
+            <span class="field-hint">Será usado como identificador do solicitante</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="field-titulo">Título do Ticket <span class="required">*</span></label>
+            <input
+              type="text"
+              id="field-titulo"
+              class="form-input"
+              placeholder="Ex: App trava ao abrir tela de pagamento"
+              maxlength="200"
+            />
+            <span class="field-hint"></span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="field-descricao">Descrição</label>
+            <textarea
+              id="field-descricao"
+              class="form-textarea"
+              placeholder="Descreva o problema em detalhes. O que aconteceu? Em qual dispositivo? Com que frequência?"
+              rows="5"
+            ></textarea>
+            <span class="field-hint">Mínimo de 20 caracteres para classificação confiável</span>
+          </div>
+        </div>
+
+        <div class="submit-row">
+          <button class="btn-primary" id="submit-btn" onclick="handleSubmit()">
+            <div class="sending-spinner" id="btn-spinner"></div>
+            <svg id="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+            <span id="btn-text">Enviar Ticket</span>
+          </button>
+          <button class="btn-secondary" onclick="resetForm()">Limpar</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- RESPONSE SECTION -->
+    <section class="response-section">
+      <div class="card response-card">
+
+        <div class="section-header" style="margin-bottom:16px;">
+          <span class="section-label">Retorno do Webhook</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="response-time" id="response-time"></span>
+            <span class="response-status-pill" id="response-status-pill"></span>
+          </div>
+        </div>
+
+        <!-- EMPTY STATE -->
+        <div class="response-empty" id="response-empty">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          <p>Aguardando envio do ticket...</p>
+        </div>
+
+        <!-- RESPONSE CONTENT -->
+        <div class="response-content" id="response-content">
+
+          <!-- Classification cards (shown only on success) -->
+          <div class="response-classification" id="response-classification" style="display:none;">
+            <div class="class-item">
+              <div class="class-item-label">Tipo</div>
+              <div class="class-item-value" id="class-tipo">–</div>
+            </div>
+            <div class="class-item">
+              <div class="class-item-label">Severidade</div>
+              <div class="class-item-value" id="class-severidade">–</div>
+            </div>
+            <div class="class-item">
+              <div class="class-item-label">Time</div>
+              <div class="class-item-value" id="class-time">–</div>
+            </div>
+          </div>
+
+          <!-- Raw JSON -->
+          <div class="response-json-box">
+            <pre id="response-json"></pre>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- HISTORY SECTION -->
+    <section class="history-section">
+      <div class="card history-card">
+        <div class="section-header">
+          <span class="section-label">Histórico de Envios</span>
+          <span class="section-count" id="history-count">0</span>
+        </div>
+        <div id="history-table-container">
+          <div class="history-empty">Nenhum ticket enviado ainda.</div>
         </div>
       </div>
+    </section>
 
-      <!-- RESPONSE — full width -->
-      <div class="response-panel" id="response-panel"></div>
+  </main>
 
-    </div><!-- /main-grid -->
-  </div><!-- /app -->
+  <!-- LOADING OVERLAY -->
+  <div class="loading-overlay" id="loading-overlay" style="display:none;">
+    <div class="loading-card">
+      <div class="loading-spinner-large"></div>
+      <div>
+        <div class="loading-text">Enviando para n8n...</div>
+        <div class="loading-sub">Aguardando resposta do webhook</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- EDIT MODAL -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span class="modal-title">Editar e Reenviar Ticket</span>
+        <button class="modal-close" onclick="closeModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-form">
+        <div class="form-group">
+          <label>Ticket ID</label>
+          <input type="text" id="modal-ticket-id" class="form-input" placeholder="JIRA-XXXX" />
+        </div>
+        <div class="form-group">
+          <label>Solicitante (email)</label>
+          <input type="email" id="modal-solicitante" class="form-input" placeholder="email@empresa.com" />
+        </div>
+        <div class="form-group">
+          <label>Título</label>
+          <input type="text" id="modal-titulo" class="form-input" placeholder="Título do ticket" />
+        </div>
+        <div class="form-group">
+          <label>Descrição</label>
+          <textarea id="modal-descricao" class="form-textarea" rows="4" placeholder="Descrição do problema"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
+        <button class="btn-primary" onclick="submitModal()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+          </svg>
+          Salvar e Reenviar
+        </button>
+      </div>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>
