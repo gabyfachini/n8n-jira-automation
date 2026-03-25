@@ -4,9 +4,9 @@ let ticketCounter = 1017;
 let history = [];
 
 // ── PRESET CASES ──
-// Ordenados: Sucesso → Aviso/Incompleto → Erro
+// Sorted: Success → Warning/Incomplete → Error
 const PRESETS = [
-  // ── SUCESSO ──
+  // ── SUCCESS ──
   {
     id: 1,
     name: "Caso Base – Bug Alta",
@@ -53,22 +53,7 @@ const PRESETS = [
     }
   },
   {
-    id: 9,
-    name: "Ambíguo – Testa LLM",
-    type: "info",
-    badge: "info",
-    expectedLabel: "LLM · Resultado variável",
-    expectedStatus: "200 OK",
-    data: {
-      ticket_id: "JIRA-1009",
-      title: "Tela demora muito para carregar",
-      description: "A tela inicial leva mais de 20 segundos para carregar sempre que abro o app.",
-      requester_name: "Fernanda Lima",
-      requester_email: "user9@email.com"
-    }
-  },
-  {
-    id: 10,
+    id: 4,
     name: "Texto Longo – Robustez",
     type: "success",
     badge: "success",
@@ -83,7 +68,7 @@ const PRESETS = [
     }
   },
   {
-    id: 11,
+    id: 5,
     name: "Campos Extras – Resiliência",
     type: "success",
     badge: "success",
@@ -100,7 +85,7 @@ const PRESETS = [
     }
   },
   {
-    id: 14,
+    id: 6,
     name: "Dúvida com Contexto Forte",
     type: "success",
     badge: "success",
@@ -115,7 +100,7 @@ const PRESETS = [
     }
   },
   {
-    id: 15,
+    id: 7,
     name: "Crítico – Sistema Fora do Ar",
     type: "success",
     badge: "success",
@@ -130,7 +115,22 @@ const PRESETS = [
     }
   },
   {
-    id: 16,
+    id: 8,
+    name: "Ambíguo – Testa LLM",
+    type: "info",
+    badge: "info",
+    expectedLabel: "LLM · Resultado variável",
+    expectedStatus: "200 OK",
+    data: {
+      ticket_id: "JIRA-1009",
+      title: "Tela demora muito para carregar",
+      description: "A tela inicial leva mais de 20 segundos para carregar sempre que abro o app.",
+      requester_name: "Fernanda Lima",
+      requester_email: "user9@email.com"
+    }
+  },
+  {
+    id: 9,
     name: "Edge Case – Misto",
     type: "info",
     badge: "info",
@@ -145,9 +145,9 @@ const PRESETS = [
     }
   },
 
-  // ── AVISO / INCOMPLETO ──
+  // ── WARNING / INCOMPLETE ──
   {
-    id: 101,
+    id: 10,
     name: "Bug sem detalhes",
     type: "warning",
     badge: "warning",
@@ -162,7 +162,7 @@ const PRESETS = [
     }
   },
   {
-    id: 102,
+    id: 11,
     name: "Dúvida genérica",
     type: "warning",
     badge: "warning",
@@ -177,7 +177,7 @@ const PRESETS = [
     }
   },
   {
-    id: 103,
+    id: 12,
     name: "Problema sem evidência",
     type: "warning",
     badge: "warning",
@@ -192,7 +192,7 @@ const PRESETS = [
     }
   },
   {
-    id: 104,
+    id: 13,
     name: "Sem dados essenciais",
     type: "warning",
     badge: "warning",
@@ -207,7 +207,7 @@ const PRESETS = [
     }
   },
   {
-    id: 105,
+    id: 14,
     name: "Ambíguo",
     type: "warning",
     badge: "warning",
@@ -222,7 +222,7 @@ const PRESETS = [
     }
   },
   {
-    id: 4,
+    id: 15,
     name: "Ticket Incompleto – Descrição Vaga",
     type: "warning",
     badge: "warning",
@@ -237,7 +237,7 @@ const PRESETS = [
     }
   },
   {
-    id: 8,
+    id: 16,
     name: "Descrição Muito Curta",
     type: "warning",
     badge: "warning",
@@ -252,7 +252,7 @@ const PRESETS = [
     }
   },
   {
-    id: 13,
+    id: 17,
     name: "LLM Pode Quebrar Parse",
     type: "warning",
     badge: "warning",
@@ -267,9 +267,9 @@ const PRESETS = [
     }
   },
 
-  // ── ERRO ──
+  // ── ERROR ──
   {
-    id: 5,
+    id: 18,
     name: "Campo Faltando – Sem Descrição",
     type: "error",
     badge: "error",
@@ -284,7 +284,7 @@ const PRESETS = [
     }
   },
   {
-    id: 6,
+    id: 19,
     name: "Sem Título",
     type: "error",
     badge: "error",
@@ -299,7 +299,7 @@ const PRESETS = [
     }
   },
   {
-    id: 7,
+    id: 20,
     name: "Todos Campos Vazios",
     type: "error",
     badge: "error",
@@ -314,7 +314,7 @@ const PRESETS = [
     }
   },
   {
-    id: 12,
+    id: 21,
     name: "Payload Malformado",
     type: "error",
     badge: "error",
@@ -572,7 +572,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderPresets();
   updateTicketIdDisplay();
 
-  // Iniciar os casos de uso recolhidos
+  // Start the collected use cases
   const collapsible = $('presets-collapsible');
   const btn = $('btn-collapse-presets');
   collapsible.classList.add('collapsed');

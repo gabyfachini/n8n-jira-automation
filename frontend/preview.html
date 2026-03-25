@@ -739,9 +739,8 @@ body {
     </div>
   </div>
 <script>
-// ═══════════════════════════════════════════════
+
 // PRESETS — payloads de entrada
-// ═══════════════════════════════════════════════
 const PRESETS = [
   // ── VÁLIDOS ──
   {
@@ -867,15 +866,11 @@ const PRESETS = [
   }
 ];
 
-// ═══════════════════════════════════════════════
 // STATE
-// ═══════════════════════════════════════════════
 let activePreset = null;
 let requestHistory = [];
 
-// ═══════════════════════════════════════════════
 // INIT
-// ═══════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
   buildPresets();
   loadPreset('bug-app');
@@ -884,9 +879,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('payload-textarea').addEventListener('input', validateJSON);
 });
 
-// ═══════════════════════════════════════════════
 // BUILD PRESET LIST
-// ═══════════════════════════════════════════════
 function buildPresets() {
   const container = document.getElementById('preset-list');
   const groups = {
@@ -918,9 +911,7 @@ function buildPresets() {
   });
 }
 
-// ═══════════════════════════════════════════════
 // LOAD PRESET INTO EDITOR
-// ═══════════════════════════════════════════════
 function loadPreset(id) {
   const preset = PRESETS.find(p => p.id === id);
   if (!preset) return;
@@ -943,9 +934,7 @@ function loadPreset(id) {
   clearResponse();
 }
 
-// ═══════════════════════════════════════════════
 // JSON VALIDATION
-// ═══════════════════════════════════════════════
 function validateJSON() {
   const val = document.getElementById('payload-textarea').value.trim();
   const indicator = document.getElementById('json-indicator');
@@ -970,9 +959,7 @@ function validateJSON() {
   }
 }
 
-// ═══════════════════════════════════════════════
 // COPY WEBHOOK URL
-// ═══════════════════════════════════════════════
 function copyWebhookUrl() {
   const url = document.getElementById('webhook-url').value;
   navigator.clipboard.writeText(url).then(() => {
@@ -982,9 +969,7 @@ function copyWebhookUrl() {
   });
 }
 
-// ═══════════════════════════════════════════════
 // SEND REQUEST
-// ═══════════════════════════════════════════════
 async function sendRequest() {
   const rawPayload = document.getElementById('payload-textarea').value.trim();
   const webhookUrl = document.getElementById('webhook-url').value.trim();
@@ -1045,9 +1030,7 @@ async function sendRequest() {
   }
 }
 
-// ═══════════════════════════════════════════════
 // SHOW RESPONSE
-// ═══════════════════════════════════════════════
 function showLoading() {
   const panel = document.getElementById('response-panel');
   panel.className = 'response-panel visible card';
@@ -1171,9 +1154,7 @@ function showResponse(httpStatus, data, elapsed, sentPayload) {
   panel.innerHTML = `<div class="card-body">${statusBar}${content}</div>`;
 }
 
-// ═══════════════════════════════════════════════
 // HISTORY
-// ═══════════════════════════════════════════════
 function addToHistory(payload, httpStatus, responseData) {
   const status = responseData?.status || '';
   const type = httpStatus >= 400 || status.startsWith('erro') ? 'err'
@@ -1223,9 +1204,7 @@ function loadFromHistory(idx) {
   showResponse(item.httpStatus, item.responseData, 0, item.payload);
 }
 
-// ═══════════════════════════════════════════════
 // HELPERS
-// ═══════════════════════════════════════════════
 function field(key, val) {
   return `<div class="result-field">
     <span class="result-field-key">${key}</span>
