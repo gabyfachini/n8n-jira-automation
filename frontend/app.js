@@ -9,31 +9,31 @@ const PRESETS = [
   // ── SUCCESS ──
   {
     id: 1,
-    name: "Caso Base – Bug Alta",
+    name: "Happy Path – Bug Crítico",
     type: "success",
     badge: "success",
     expectedLabel: "Sucesso · Bug · Alta",
     expectedStatus: "200 OK",
     data: {
-      ticket_id: "JIRA-1001",
-      title: "App trava ao abrir tela de pagamento",
-      description: "Ao tentar abrir a tela de pagamento, o app fecha sozinho após alguns segundos. Testado em Android e iOS.",
+      ticket_id: "JIRA-3001",
+      title: "Sistema fora do ar",
+      description: "Nenhum usuário consegue acessar a plataforma desde hoje cedo. Total indisponibilidade.",
       requester_name: "João Silva",
       requester_email: "user1@email.com"
     }
   },
   {
     id: 2,
-    name: "Dúvida – Produto / Baixa",
+    name: "Dúvida – Produto",
     type: "success",
     badge: "success",
     expectedLabel: "Sucesso · Dúvida · Baixa",
     expectedStatus: "200 OK",
     data: {
-      ticket_id: "JIRA-1002",
-      title: "Como alterar minha senha?",
-      description: "Não encontrei onde posso alterar minha senha no aplicativo.",
-      requester_name: "Ana Costa",
+      ticket_id: "JIRA-3002",
+      title: "Como alterar senha?",
+      description: "Não encontrei onde posso alterar minha senha dentro do sistema.",
+      requester_name: "Maria Souza",
       requester_email: "user2@email.com"
     }
   },
@@ -45,262 +45,113 @@ const PRESETS = [
     expectedLabel: "Sucesso · Problema · Média",
     expectedStatus: "200 OK",
     data: {
-      ticket_id: "JIRA-1003",
-      title: "Cobrança duplicada",
-      description: "Fui cobrado duas vezes pelo mesmo serviço na fatura deste mês.",
-      requester_name: "Carlos Santos",
+      ticket_id: "JIRA-3003",
+      title: "Sistema lento",
+      description: "O sistema está demorando muito para responder desde ontem à noite.",
+      requester_name: "Carlos Lima",
       requester_email: "user3@email.com"
     }
   },
+
+  // ── EDGE / LLM ──
   {
     id: 4,
-    name: "Texto Longo – Robustez",
-    type: "success",
-    badge: "success",
-    expectedLabel: "Sucesso · Bug · Alta",
-    expectedStatus: "200 OK",
-    data: {
-      ticket_id: "JIRA-1010",
-      title: "Erro intermitente ao gerar relatório financeiro",
-      description: "Desde a última atualização, ao tentar gerar relatórios financeiros no aplicativo, ocorre uma falha intermitente. Em alguns momentos funciona normalmente, mas na maioria das vezes apresenta erro após alguns segundos. Já testei em diferentes redes e dispositivos e o problema persiste.",
-      requester_name: "Carlos Eduardo",
-      requester_email: "user10@email.com"
-    }
-  },
-  {
-    id: 5,
-    name: "Campos Extras – Resiliência",
-    type: "success",
-    badge: "success",
-    expectedLabel: "Sucesso · Ignora extras",
-    expectedStatus: "200 OK",
-    data: {
-      ticket_id: "JIRA-1011",
-      title: "Erro ao atualizar perfil",
-      description: "Não consigo salvar alterações no meu perfil.",
-      requester_name: "Usuário Extra",
-      requester_email: "user11@email.com",
-      user_priority: "urgente",
-      platform: "iOS"
-    }
-  },
-  {
-    id: 6,
-    name: "Dúvida com Contexto Forte",
-    type: "success",
-    badge: "success",
-    expectedLabel: "Sucesso · Dúvida · Baixa",
-    expectedStatus: "200 OK",
-    data: {
-      ticket_id: "JIRA-1014",
-      title: "Não entendi como funciona o cashback",
-      description: "Gostaria de saber como funciona o cashback no aplicativo, pois não ficou claro após a compra.",
-      requester_name: "Ana Costa",
-      requester_email: "user14@email.com"
-    }
-  },
-  {
-    id: 7,
-    name: "Crítico – Sistema Fora do Ar",
-    type: "success",
-    badge: "success",
-    expectedLabel: "Sucesso · Bug · Alta",
-    expectedStatus: "200 OK",
-    data: {
-      ticket_id: "JIRA-1015",
-      title: "Sistema fora do ar",
-      description: "Nenhum usuário consegue acessar o sistema desde hoje cedo. Total indisponibilidade.",
-      requester_name: "João Pereira",
-      requester_email: "user15@email.com"
-    }
-  },
-  {
-    id: 8,
-    name: "Ambíguo – Testa LLM",
-    type: "info",
-    badge: "info",
-    expectedLabel: "LLM · Resultado variável",
-    expectedStatus: "200 OK",
-    data: {
-      ticket_id: "JIRA-1009",
-      title: "Tela demora muito para carregar",
-      description: "A tela inicial leva mais de 20 segundos para carregar sempre que abro o app.",
-      requester_name: "Fernanda Lima",
-      requester_email: "user9@email.com"
-    }
-  },
-  {
-    id: 9,
-    name: "Edge Case – Misto",
+    name: "Ambíguo – Bug ou Performance",
     type: "info",
     badge: "info",
     expectedLabel: "LLM · Bug ou Problema",
     expectedStatus: "200 OK",
     data: {
-      ticket_id: "JIRA-1016",
-      title: "Erro ao pagar mas não sei se fui cobrado",
-      description: "Tentei pagar e deu erro, mas apareceu cobrança no cartão.",
-      requester_name: "Maria Silva",
-      requester_email: "user16@email.com"
-    }
-  },
-
-  // ── WARNING / INCOMPLETE ──
-  {
-    id: 10,
-    name: "Bug sem detalhes",
-    type: "warning",
-    badge: "warning",
-    expectedLabel: "Incompleto · Bug",
-    expectedStatus: "200 OK",
-    data: {
-      ticket_id: "JIRA-2001",
-      title: "Erro no sistema",
-      description: "Não está funcionando",
-      requester_name: "Carlos Silva",
-      requester_email: "user@email.com"
-    }
-  },
-  {
-    id: 11,
-    name: "Dúvida genérica",
-    type: "warning",
-    badge: "warning",
-    expectedLabel: "Incompleto · Dúvida",
-    expectedStatus: "200 OK",
-    data: {
-      ticket_id: "JIRA-2002",
-      title: "Como funciona?",
-      description: "",
-      requester_name: "Ana Souza",
-      requester_email: "user@email.com"
-    }
-  },
-  {
-    id: 12,
-    name: "Problema sem evidência",
-    type: "warning",
-    badge: "warning",
-    expectedLabel: "Incompleto · Problema operacional",
-    expectedStatus: "200 OK",
-    data: {
-      ticket_id: "JIRA-2003",
-      title: "Erro no pagamento",
-      description: "Acho que deu erro",
-      requester_name: "Marcos Lima",
-      requester_email: "user@email.com"
-    }
-  },
-  {
-    id: 13,
-    name: "Sem dados essenciais",
-    type: "warning",
-    badge: "warning",
-    expectedLabel: "Incompleto",
-    expectedStatus: "200 OK",
-    data: {
-      ticket_id: "JIRA-2004",
-      title: "",
-      description: "Erro ao tentar usar funcionalidade",
-      requester_name: "Julia Rocha",
-      requester_email: "user@email.com"
-    }
-  },
-  {
-    id: 14,
-    name: "Ambíguo",
-    type: "warning",
-    badge: "warning",
-    expectedLabel: "Incompleto",
-    expectedStatus: "200 OK",
-    data: {
-      ticket_id: "JIRA-2005",
-      title: "Problema estranho",
-      description: "Às vezes funciona, às vezes não",
-      requester_name: "Fernanda Alves",
-      requester_email: "user@email.com"
-    }
-  },
-  {
-    id: 15,
-    name: "Ticket Incompleto – Descrição Vaga",
-    type: "warning",
-    badge: "warning",
-    expectedLabel: "Aviso · Descrição curta",
-    expectedStatus: "400 Bad Request",
-    data: {
-      ticket_id: "JIRA-1004",
-      title: "Erro no app",
-      description: "Não funciona",
-      requester_name: "Maria Souza",
+      ticket_id: "JIRA-3004",
+      title: "Tela demora e trava",
+      description: "A tela demora muito para carregar e às vezes parece travada.",
+      requester_name: "Fernanda Lima",
       requester_email: "user4@email.com"
     }
   },
   {
-    id: 16,
+    id: 5,
+    name: "Campos Extras – Ignorar",
+    type: "success",
+    badge: "success",
+    expectedLabel: "Sucesso · Ignora extras",
+    expectedStatus: "200 OK",
+    data: {
+      ticket_id: "JIRA-3005",
+      title: "Erro ao atualizar perfil",
+      description: "Não consigo salvar alterações no meu perfil.",
+      requester_name: "Usuário Extra",
+      requester_email: "user5@email.com",
+      prioridade_usuario: "alta",
+      origem: "mobile"
+    }
+  },
+
+  // ── WARNING ──
+  {
+    id: 6,
     name: "Descrição Muito Curta",
     type: "warning",
     badge: "warning",
-    expectedLabel: "Aviso · Mínimo 20 chars",
+    expectedLabel: "Aviso · Descrição insuficiente",
     expectedStatus: "400 Bad Request",
     data: {
-      ticket_id: "JIRA-1008",
-      title: "Bug",
-      description: "Erro",
-      requester_name: "Lucas Oliveira",
-      requester_email: "user8@email.com"
+      ticket_id: "JIRA-3006",
+      title: "Erro",
+      description: "Não funciona",
+      requester_name: "Ana Costa",
+      requester_email: "user6@email.com"
     }
   },
   {
-    id: 17,
-    name: "LLM Pode Quebrar Parse",
+    id: 7,
+    name: "Descrição Vazia",
+    type: "warning",
+    badge: "warning",
+    expectedLabel: "Incompleto · Campo obrigatório",
+    expectedStatus: "400 Bad Request",
+    data: {
+      ticket_id: "JIRA-3007",
+      title: "Erro no app",
+      description: "",
+      requester_name: "Bruno Alves",
+      requester_email: "user7@email.com"
+    }
+  },
+  {
+    id: 8,
+    name: "LLM Pode Falhar Parse",
     type: "warning",
     badge: "warning",
     expectedLabel: "LLM · Parse instável",
     expectedStatus: "200 / 500",
     data: {
-      ticket_id: "JIRA-1013",
+      ticket_id: "JIRA-3008",
       title: "Erro estranho",
-      description: "asdfasdf qwerqwer zxcvzxcv erro bug problema ???",
-      requester_name: "Usuário Teste",
-      requester_email: "user13@email.com"
+      description: "asdf qwer zxcv erro bug ??? comportamento inconsistente",
+      requester_name: "Teste User",
+      requester_email: "user8@email.com"
     }
   },
 
   // ── ERROR ──
   {
-    id: 18,
-    name: "Campo Faltando – Sem Descrição",
-    type: "error",
-    badge: "error",
-    expectedLabel: "Erro · Campo vazio",
-    expectedStatus: "400 Bad Request",
-    data: {
-      ticket_id: "JIRA-1005",
-      title: "Erro ao logar",
-      description: "",
-      requester_name: "",
-      requester_email: "user5@email.com"
-    }
-  },
-  {
-    id: 19,
-    name: "Sem Título",
+    id: 9,
+    name: "Campo Faltando",
     type: "error",
     badge: "error",
     expectedLabel: "Erro · Campo ausente",
     expectedStatus: "400 Bad Request",
     data: {
-      ticket_id: "JIRA-1006",
-      title: "",
-      description: "O app não abre desde ontem.",
-      requester_name: "João Silva",
-      requester_email: "user6@email.com"
+      ticket_id: "JIRA-3009",
+      title: "Erro ao logar",
+      requester_name: "Carlos Silva",
+      requester_email: "user9@email.com"
     }
   },
   {
-    id: 20,
-    name: "Todos Campos Vazios",
+    id: 10,
+    name: "Payload Totalmente Inválido",
     type: "error",
     badge: "error",
     expectedLabel: "Erro · Payload inválido",
@@ -311,18 +162,6 @@ const PRESETS = [
       description: "",
       requester_name: "",
       requester_email: ""
-    }
-  },
-  {
-    id: 21,
-    name: "Payload Malformado",
-    type: "error",
-    badge: "error",
-    expectedLabel: "Erro · Campos ausentes",
-    expectedStatus: "400 Bad Request",
-    data: {
-      ticket_id: "JIRA-1012",
-      title: "App crasha"
     }
   }
 ];
